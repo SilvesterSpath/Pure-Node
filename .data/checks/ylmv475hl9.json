@@ -1,1 +1,1 @@
-{"id":"ylmv475hl9","userPhone":"33333","protocol":"https","url":"google.com","method":"GET","successCodes":[200,201],"timeoutSeconds":3,"phone":false,"state":"down","lastChecked":1645171120358}
+{"id":"ylmv475hl9","userPhone":"33333","protocol":"https","url":"google.com","method":"GET","successCodes":[200,201,301],"timeoutSeconds":3,"phone":false,"state":"up","lastChecked":1645421302353}
