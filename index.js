@@ -6,6 +6,7 @@
 // Dependencies
 const server = require('./lib/server');
 const workers = require('./lib/workers');
+const dotenv = require('dotenv').config({ path: './.env' });
 
 // Declare the app
 const app = {};
@@ -21,6 +22,8 @@ app.init = () => {
 
 // Execute that function
 app.init();
+
+console.log(process.env.TEST);
 
 // Export the app
 module.exports = app;
