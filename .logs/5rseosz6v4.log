@@ -1,1 +1,0 @@
-{"check":{"id":"5rseosz6v4","userPhone":"33333","protocol":"http","url":"yahoo.com","method":"GET","successCodes":[200,201],"timeoutSeconds":3,"phone":false,"state":"down","lastChecked":1645592430208},"outcome":{"error":false,"responseCode":301},"state":"down","alert":false,"time":1645595812950}
