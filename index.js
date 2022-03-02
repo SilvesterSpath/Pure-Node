@@ -23,7 +23,7 @@ app.init = () => {
 // Execute that function
 app.init();
 
-console.log(process.env.TEST);
+console.log('process.env.TEST:', process.env.TEST);
 
 // Export the app
 module.exports = app;
