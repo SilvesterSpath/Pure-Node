@@ -2,5 +2,27 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "nodemon": "^2.0.15"
-  }
+  },
+  "name": "03_web_app_gui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SilvesterSpath/pure-node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SilvesterSpath/pure-node/issues"
+  },
+  "homepage": "https://github.com/SilvesterSpath/pure-node#readme",
+  "description": ""
 }

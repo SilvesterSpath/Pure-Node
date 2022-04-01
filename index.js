@@ -4,9 +4,9 @@
  */
 
 // Dependencies
+require('dotenv').config({ path: './.env' });
 const server = require('./lib/server');
 const workers = require('./lib/workers');
-const dotenv = require('dotenv').config({ path: './.env' });
 
 // Declare the app
 const app = {};
