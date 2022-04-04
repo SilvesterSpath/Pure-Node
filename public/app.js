@@ -48,14 +48,14 @@ app.client.request = (
       if (counter > 1) {
         requestUrl += '&';
       }
-      requestUrl += itme + queryStringObject[item];
+      requestUrl += item + '=' + queryStringObject[item];
     }
   }
 
   // Form the http request as a JSON type
   const xhr = new XMLHttpRequest();
   xhr.open(method, requestUrl, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Content-type', 'application/json');
 
   // For each header sent, add it to the request
   for (const item in headers) {
@@ -99,7 +99,7 @@ app.bindForms = () => {
     e.preventDefault();
     const formId = this.id;
     const path = this.action;
-    const method = this.method.toUpperCase();
+    const method = this.method;
 
     // Hide the error message (if it's currently shown due to a previous error)
     document.querySelector('#' + formId + ' .formError').style.display =
@@ -128,9 +128,44 @@ app.bindForms = () => {
       (statusCode, responsePayload) => {
         // Display an error on the form if needed
         if (statusCode !== 200) {
-          // Try to get
+          // Try to get the error from the api, or set a default error message
+          const error =
+            typeof responsePayload.Error == 'string'
+              ? responsePayload.Error
+              : 'An error has occured, please try again';
+
+          // Set the formError field with error text
+          document.querySelector('#' + formId + ' .formError').innerHTML =
+            error;
+
+          // Show (unhide) the form error field on the form
+          document.querySelector('#' + formId + ' .formError').style.display =
+            'block';
+        } else {
+          // If successful, send to form response processor
+          app.formResponseProcessor(formId, payload, responsePayload);
         }
       }
     );
   });
+};
+
+// Form response processor
+app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
+  const functionToCall = false;
+  if (formId == 'accountCreate') {
+    console.log('The acocuntCreate form was successfully submitted');
+    // @TODO Do something here now that the account has been created successfully
+  }
+};
+
+// Init (bootstrapping)
+app.init = () => {
+  // Bind all form submission
+  app.bindForms();
+};
+
+// Call this init processor after the window loads
+window.onload = () => {
+  app.init();
 };
