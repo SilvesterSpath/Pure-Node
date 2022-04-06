@@ -92,14 +92,17 @@ app.client.request = (
   xhr.send(payloadString);
 };
 
+console.log(globalThis);
+
 // Bind the forms
 app.bindForms = () => {
-  document.querySelector('form').addEventListener('submit', function (e) {
+  document.querySelector('form').addEventListener('submit', (e) => {
+    const form = document.querySelector('form');
     // Stop it from submitting
     e.preventDefault();
-    const formId = this.id;
-    const path = this.action;
-    const method = this.method.toUpperCase();
+    const formId = form.id;
+    const path = form.action;
+    const method = form.method.toUpperCase(); //this is very important because in the HTMLFormElement the method is !!!lowercase!!!
 
     // Hide the error message (if it's currently shown due to a previous error)
     document.querySelector('#' + formId + ' .formError').style.display =
@@ -107,7 +110,7 @@ app.bindForms = () => {
 
     // Turn the inputs into a payload
     const payload = {};
-    const elements = this.elements;
+    const elements = form.elements;
     for (let i = 0; i < elements.length; i++) {
       if (elements[i].type !== 'submit') {
         const valueOfElement =
