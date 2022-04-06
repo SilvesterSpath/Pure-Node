@@ -94,12 +94,12 @@ app.client.request = (
 
 // Bind the forms
 app.bindForms = () => {
-  document.querySelector('form').addEventListener('submit', (e) => {
+  document.querySelector('form').addEventListener('submit', function (e) {
     // Stop it from submitting
     e.preventDefault();
     const formId = this.id;
     const path = this.action;
-    const method = this.method;
+    const method = this.method.toUpperCase();
 
     // Hide the error message (if it's currently shown due to a previous error)
     document.querySelector('#' + formId + ' .formError').style.display =
