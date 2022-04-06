@@ -92,65 +92,65 @@ app.client.request = (
   xhr.send(payloadString);
 };
 
-console.log(globalThis);
-
 // Bind the forms
 app.bindForms = () => {
-  document.querySelector('form').addEventListener('submit', (e) => {
-    const form = document.querySelector('form');
-    // Stop it from submitting
-    e.preventDefault();
-    const formId = form.id;
-    const path = form.action;
-    const method = form.method.toUpperCase(); //this is very important because in the HTMLFormElement the method is !!!lowercase!!!
+  if (document.querySelector('form')) {
+    document.querySelector('form').addEventListener('submit', (e) => {
+      const form = document.querySelector('form');
+      // Stop it from submitting
+      e.preventDefault();
+      const formId = form.id;
+      const path = form.action;
+      const method = form.method.toUpperCase(); //this is very important because in the HTMLFormElement the method is !!!lowercase!!!
 
-    // Hide the error message (if it's currently shown due to a previous error)
-    document.querySelector('#' + formId + ' .formError').style.display =
-      'hidden';
+      // Hide the error message (if it's currently shown due to a previous error)
+      document.querySelector('#' + formId + ' .formError').style.display =
+        'hidden';
 
-    // Turn the inputs into a payload
-    const payload = {};
-    const elements = form.elements;
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i].type !== 'submit') {
-        const valueOfElement =
-          elements[i].type == 'checkbox'
-            ? elements[i].checked
-            : elements[i].value;
-        payload[elements[i].name] = valueOfElement;
-      }
-    }
-
-    // Call the API
-    app.client.request(
-      undefined,
-      path,
-      method,
-      undefined,
-      payload,
-      (statusCode, responsePayload) => {
-        // Display an error on the form if needed
-        if (statusCode !== 200) {
-          // Try to get the error from the api, or set a default error message
-          const error =
-            typeof responsePayload.Error == 'string'
-              ? responsePayload.Error
-              : 'An error has occured, please try again';
-
-          // Set the formError field with error text
-          document.querySelector('#' + formId + ' .formError').innerHTML =
-            error;
-
-          // Show (unhide) the form error field on the form
-          document.querySelector('#' + formId + ' .formError').style.display =
-            'block';
-        } else {
-          // If successful, send to form response processor
-          app.formResponseProcessor(formId, payload, responsePayload);
+      // Turn the inputs into a payload
+      const payload = {};
+      const elements = form.elements;
+      for (let i = 0; i < elements.length; i++) {
+        if (elements[i].type !== 'submit') {
+          const valueOfElement =
+            elements[i].type == 'checkbox'
+              ? elements[i].checked
+              : elements[i].value;
+          payload[elements[i].name] = valueOfElement;
         }
       }
-    );
-  });
+
+      // Call the API
+      app.client.request(
+        undefined,
+        path,
+        method,
+        undefined,
+        payload,
+        (statusCode, responsePayload) => {
+          // Display an error on the form if needed
+          if (statusCode !== 200) {
+            // Try to get the error from the api, or set a default error message
+            const error =
+              typeof responsePayload.Error == 'string'
+                ? responsePayload.Error
+                : 'An error has occured, please try again';
+
+            // Set the formError field with error text
+            document.querySelector('#' + formId + ' .formError').innerHTML =
+              error;
+
+            // Show (unhide) the form error field on the form
+            document.querySelector('#' + formId + ' .formError').style.display =
+              'block';
+          } else {
+            // If successful, send to form response processor
+            app.formResponseProcessor(formId, payload, responsePayload);
+          }
+        }
+      );
+    });
+  }
 };
 
 // Form response processor
