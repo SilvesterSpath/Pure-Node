@@ -156,9 +156,101 @@ app.bindForms = () => {
 // Form response processor
 app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
   const functionToCall = false;
+  // If account creation was successful, try to immediately log the user in
   if (formId == 'accountCreate') {
     console.log('The acocuntCreate form was successfully submitted');
     // @TODO Do something here now that the account has been created successfully
+    // Take the phone and password, and use it to log the user in
+    const newPayload = {
+      phone: requestPayload.phone,
+      password: requestPayload.password,
+    };
+
+    // Call the API
+    app.client.request(
+      undefined,
+      'api/tokens',
+      'POST',
+      undefined,
+      newPayload,
+      (newStatusCode, newResponsePayload) => {
+        // Display an error on the form if needed
+        if (newStatusCode !== 200) {
+          // Set the formError field with the error text
+          document.querySelector('#' + formId + ' .formError').innerHTML =
+            'Sorry, an error occured. Please try again.';
+          // Show (unhide) the form error field on the form
+          document.querySelector('#' + formId + ' .formError').style.display =
+            'block';
+        } else {
+          // If successful, set the token and redirect the user
+          app.setSessionToken(newResponsePayload);
+          window.location = '/checks/all';
+        }
+      }
+    );
+  }
+  // If login was successful, set the token in localstorage and redirect the user
+  if (formId == 'sessionCreate') {
+    app.setSessionToken(responsePayload);
+    window.location = '/checks/all';
+  }
+};
+
+// Get the session token from localStorage and set it in the app.config object
+app.getSessionToken = () => {
+  const tokenString = localStorage.getItem('token');
+  if (typeof tokenString == 'string') {
+    try {
+      const token = JSON.parse(tokenString); // this creates an object from the string
+      app.config.sessionToken = token;
+      if (typeof token == 'object') {
+        app.setLoggedInClass(true);
+      } else {
+        app.setLoggedInClass(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+      app.config.sessionToken = false;
+      app.setLoggedInClass(false);
+    }
+  }
+};
+
+// Set or remove the loggedIn class from the body
+app.setLoggedInClass = (add) => {
+  const body = document.querySelector('body');
+  if (add) {
+    body.classList.add('loggedIn');
+  } else {
+    body.classList.remove('loggedIn');
+  }
+};
+
+// Set the session token in the app.config object as well as localstorage
+app.setSessionToken = (token) => {
+  app.config.sessionToken = token;
+  const tokenString = JSON.stringify(token);
+  localStorage.setItem('token', tokenString);
+  if (typeof token == 'object') {
+    app.setLoggedInClass(true);
+  } else {
+    app.setLoggedInClass(false);
+  }
+};
+
+// Renew the token
+app.renewToken = (callback) => {
+  const currentToken =
+    typeof app.config.sessionToken == 'object'
+      ? app.config.sessionToken
+      : false;
+  if (currentToken) {
+    // Update the token with a new expiration
+    const payload = {
+      id: currentToken.id,
+      extend: true,
+    };
   }
 };
 
