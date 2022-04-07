@@ -166,7 +166,7 @@ app.formResponseProcessor = (formId, requestPayload, responsePayload) => {
       password: requestPayload.password,
     };
 
-    // Call the API
+    // Call the API to log in the user
     app.client.request(
       undefined,
       'api/tokens',
@@ -251,13 +251,67 @@ app.renewToken = (callback) => {
       id: currentToken.id,
       extend: true,
     };
+    app.client.request(
+      undefined,
+      'api/tokens',
+      'PUT',
+      undefined,
+      payload,
+      (statusCode, responsePayload) => {
+        // Display an error on the form if needed
+        if (statusCode == 200) {
+          // Get the new token details
+          const queryStringObject = { id: currentToken.id };
+          app.client.request(
+            undefined,
+            'api/token',
+            'GET',
+            queryStringObject,
+            undefined,
+            (statusCode, responsePayload) => {
+              // Display an error on the form if needed
+              if (statusCode == 200) {
+                app.setSessionToken(responsePayload);
+                callback(false);
+              } else {
+                app.setSessionToken(false);
+                callback(true);
+              }
+            }
+          );
+        } else {
+          app.setSessionToken(false);
+          callback(true);
+        }
+      }
+    );
+  } else {
+    app.setSessionToken(false);
+    callback(true);
   }
+};
+
+// Loop to renew token often
+app.tokenRenewalloop = () => {
+  setInterval(() => {
+    app.renewToken((err) => {
+      if (!err) {
+        console.log('Token renewed successfuly @ ' + Date.now());
+      }
+    });
+  }, 1000 * 60);
 };
 
 // Init (bootstrapping)
 app.init = () => {
   // Bind all form submission
   app.bindForms();
+
+  // Get the token from localastorage
+  app.getSessionToken();
+
+  // Renew token
+  app.tokenRenewalloop();
 };
 
 // Call this init processor after the window loads
