@@ -258,7 +258,7 @@ app.getSessionToken = () => {
   }
 };
 
-// Set or remove the loggedIn class from the body
+// Set (or remove) the loggedIn class from the body
 app.setLoggedInClass = (add) => {
   const body = document.querySelector('body');
   console.log(body);
@@ -336,6 +336,67 @@ app.renewToken = (callback) => {
   }
 };
 
+// Load data on the page
+app.loadDataOnPage = () => {
+  // Get the current page from the body class
+  const bodyClass = document.querySelector('body').classList;
+  const primaryClass = typeof bodyClass == 'object' ? bodyClass[0] : false;
+
+  console.log('bodyClass', typeof bodyClass);
+
+  // Logic for account settings page
+  if (primaryClass == 'accountEdit') {
+    app.loadAccountEditPage();
+  }
+};
+
+// Load the account edit page specifically
+app.loadAccountEditPage = () => {
+  // Get the phone number from the current token, of log the user out if none is there
+  const phone =
+    typeof app.config.sessionToken.phone == 'string'
+      ? app.config.sessionToken.phone
+      : false;
+
+  if (phone) {
+    // Fetch the user data
+    const queryStringObject = {
+      phone: phone,
+    };
+    app.client.request(
+      undefined,
+      'api/users',
+      'GET',
+      queryStringObject,
+      undefined,
+      (statusCode, responsePayload) => {
+        console.log(statusCode);
+        if (statusCode == 200) {
+          // Put the data into the forms as values where needed
+          document.querySelector('#accountEdit1 .firstNameInput').value =
+            responsePayload.firstName;
+          document.querySelector('#accountEdit1 .lastNameInput').value =
+            responsePayload.lastName;
+          document.querySelector('#accountEdit1 .displayPhoneInput').value =
+            responsePayload.phone;
+          // Put the hidden phone field into both forms
+          let hiddenPhoneInput = document.querySelector(
+            'input.hiddenPhoneNumberInput'
+          );
+          for (let i = 0; i < hiddenPhoneInput.length; i++) {
+            hiddenPhoneInput[i].value = responsePayload.phone;
+          }
+        } else {
+          // If the request comes back as something other than 200, log the user out (on the assumption that the api is temporarily down or the users token is bad)
+          app.logUserOut();
+        }
+      }
+    );
+  } else {
+    app.logUserOut();
+  }
+};
+
 // Loop to renew token often
 app.tokenRenewalLoop = () => {
   setInterval(() => {
@@ -344,7 +405,7 @@ app.tokenRenewalLoop = () => {
         console.log('Token renewed successfuly @ ' + Date.now());
       }
     });
-  }, 1000 * 30);
+  }, 1000 * 60);
 };
 
 // Init (bootstrapping)
@@ -360,6 +421,9 @@ app.init = () => {
 
   // Renew token
   app.tokenRenewalLoop();
+
+  // Load data on page
+  app.loadDataOnPage();
 };
 
 // Call this init processor after the window loads
