@@ -38,14 +38,14 @@ app.client.request = (
   callback = typeof callback == 'function' ? callback : false;
 
   // For each query string parameter sent, add it to the path
-  const requestUrl = path + '?';
-  const count = 0;
+  let requestUrl = path + '?';
+  let count = 0;
   for (const item in queryStringObject) {
     // this for loop only for the sake of counting the items in the queryStringObject
     if (queryStringObject.hasOwnProperty(item)) {
       count++;
       // If at least one query string parameter has already been added, prepend new ones with an ampersand
-      if (counter > 1) {
+      if (count > 1) {
         requestUrl += '&';
       }
       requestUrl += item + '=' + queryStringObject[item];
@@ -90,6 +90,47 @@ app.client.request = (
   // Send the payload as JSON
   const payloadString = JSON.stringify(payload);
   xhr.send(payloadString);
+};
+
+// Bind the logout button
+app.bindLogoutButton = () => {
+  document.getElementById('logoutButton').addEventListener('click', (e) => {
+    console.log('logout');
+    // Stop it from redirecting anywhere
+    e.preventDefault();
+
+    // Log the user out
+    app.logUserOut();
+  });
+};
+
+// Log the user out then redirect them
+app.logUserOut = () => {
+  // Get the current token id
+  const tokenId =
+    typeof app.config.sessionToken.id == 'string'
+      ? app.config.sessionToken.id
+      : false;
+
+  // Send the current token to the tokens endpoint to delete it
+  const queryStringObject = {
+    id: tokenId,
+  };
+
+  app.client.request(
+    undefined,
+    'api/tokens',
+    'DELETE',
+    queryStringObject,
+    undefined,
+    (statusCode, responsePayload) => {
+      // Set the app.config token as false
+      app.setSessionToken(false);
+
+      // Send the user to the logged out page
+      window.location = '/session/deleted';
+    }
+  );
 };
 
 // Bind the forms
@@ -220,10 +261,13 @@ app.getSessionToken = () => {
 // Set or remove the loggedIn class from the body
 app.setLoggedInClass = (add) => {
   const body = document.querySelector('body');
+  console.log(body);
   if (add) {
     body.classList.add('loggedIn');
+    console.log('loggedIn');
   } else {
     body.classList.remove('loggedIn');
+    console.log('loggedOut');
   }
 };
 
@@ -245,6 +289,7 @@ app.renewToken = (callback) => {
     typeof app.config.sessionToken == 'object'
       ? app.config.sessionToken
       : false;
+  console.log(currentToken);
   if (currentToken) {
     // Update the token with a new expiration
     const payload = {
@@ -264,7 +309,7 @@ app.renewToken = (callback) => {
           const queryStringObject = { id: currentToken.id };
           app.client.request(
             undefined,
-            'api/token',
+            'api/tokens',
             'GET',
             queryStringObject,
             undefined,
@@ -292,14 +337,14 @@ app.renewToken = (callback) => {
 };
 
 // Loop to renew token often
-app.tokenRenewalloop = () => {
+app.tokenRenewalLoop = () => {
   setInterval(() => {
     app.renewToken((err) => {
       if (!err) {
         console.log('Token renewed successfuly @ ' + Date.now());
       }
     });
-  }, 1000 * 60);
+  }, 1000 * 30);
 };
 
 // Init (bootstrapping)
@@ -307,11 +352,14 @@ app.init = () => {
   // Bind all form submission
   app.bindForms();
 
+  // Bind logout button
+  app.bindLogoutButton();
+
   // Get the token from localastorage
   app.getSessionToken();
 
   // Renew token
-  app.tokenRenewalloop();
+  app.tokenRenewalLoop();
 };
 
 // Call this init processor after the window loads
