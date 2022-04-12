@@ -402,11 +402,12 @@ app.loadAccountEditPage = () => {
           document.querySelector('#accountEdit1 .displayPhoneInput').value =
             responsePayload.phone;
           // Put the hidden phone field into both forms
-          let hiddenPhoneInput = document.querySelector(
+          let hiddenPhoneInputs = document.querySelectorAll(
             'input.hiddenPhoneNumberInput'
           );
-          for (let i = 0; i < hiddenPhoneInput.length; i++) {
-            hiddenPhoneInput[i].value = responsePayload.phone;
+
+          for (let i = 0; i < hiddenPhoneInputs.length; i++) {
+            hiddenPhoneInputs[i].value = responsePayload.phone;
           }
         } else {
           // If the request comes back as something other than 200, log the user out (on the assumption that the api is temporarily down or the users token is bad)
