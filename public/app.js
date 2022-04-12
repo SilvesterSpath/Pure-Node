@@ -137,8 +137,9 @@ app.logUserOut = () => {
 app.bindForms = () => {
   if (document.querySelector('form')) {
     const allForms = document.querySelectorAll('form');
-    for (let i = 0; i < allForms.length; i++) {
-      allForms[i].addEventListener('submit', (e) => {
+
+    allForms.forEach((i) =>
+      i.addEventListener('submit', (e) => {
         const form = document.querySelector('form');
         // Stop it from submitting
         e.preventDefault();
@@ -203,8 +204,8 @@ app.bindForms = () => {
             }
           }
         );
-      });
-    }
+      })
+    );
   }
 };
 
