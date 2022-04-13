@@ -297,7 +297,6 @@ app.getSessionToken = () => {
 // Set (or remove) the loggedIn class from the body
 app.setLoggedInClass = (add) => {
   const body = document.querySelector('body');
-  console.log(body);
   if (add) {
     body.classList.add('loggedIn');
     console.log('loggedIn');
