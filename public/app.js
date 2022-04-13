@@ -137,15 +137,16 @@ app.logUserOut = () => {
 app.bindForms = () => {
   if (document.querySelector('form')) {
     const allForms = document.querySelectorAll('form');
+    console.log('allForms', allForms);
 
     allForms.forEach((i) =>
       i.addEventListener('submit', (e) => {
-        const form = document.querySelector('form');
+        /* const form = document.querySelector('form'); */
         // Stop it from submitting
         e.preventDefault();
-        const formId = form.id;
-        const path = form.action;
-        let method = form.method.toUpperCase(); //this is very important because in the HTMLFormElement the method is !!!lowercase!!!
+        const formId = i.id;
+        const path = i.action;
+        let method = i.method.toUpperCase(); //this is very important because in the HTMLFormElement the method is !!!lowercase!!!
 
         // Hide the error message (if it's currently shown due to a previous error)
         document.querySelector('#' + formId + ' .formError').style.display =
@@ -159,7 +160,8 @@ app.bindForms = () => {
 
         // Turn the inputs into a payload
         const payload = {};
-        const elements = form.elements;
+        const elements = i.elements;
+        console.log('elements', elements);
         for (let i = 0; i < elements.length; i++) {
           if (elements[i].type !== 'submit') {
             const valueOfElement =
