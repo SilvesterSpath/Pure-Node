@@ -1,0 +1,62 @@
+<h1>Create a Check</h1>
+<h2>Your check will run once per minute</h2>
+<a href="/checks/all" class="backButton">Back</a>
+<hr>
+
+<div class="formWrapper">
+  <form action="/api/checks" id="checksCreate" method="POST">
+    <div class="formError"></div>
+    <div class="inputWrapper">
+      <div class="inputLabel">Protocol</div>
+      <select name="protovol">
+        <option value="http" selected>http://</option>
+        <option value="https">https://</option>
+      </select>
+    </div>
+    <div class="inputWrapper">
+      <div class="inputLabel">URL (not including protocol)</div>
+      <input type="text" name="url" placeholder="mywebsite.com/my/path">
+    </div>
+
+    <div class="inputWrapper">
+      <div class="inputLabel">Success Codes (HTTP codes that should represent "up")</div>
+      <div class="checkboxGroup">
+        <input type="text" class="multiselect intval" name="successCodes" value="200" checked>200
+        <input type="text" class="multiselect intval" name="successCodes" value="201" checked>201
+        <input type="text" class="multiselect intval" name="successCodes" value="301" checked>301
+        <input type="text" class="multiselect intval" name="successCodes" value="302" checked>302
+        <input type="text" class="multiselect intval" name="successCodes" value="400" checked>400
+        <input type="text" class="multiselect intval" name="successCodes" value="403" checked>403
+        <input type="text" class="multiselect intval" name="successCodes" value="404" checked>404
+        <input type="text" class="multiselect intval" name="successCodes" value="406" checked>406
+        <input type="text" class="multiselect intval" name="successCodes" value="500" checked>500
+      </div>
+    </div>
+
+    <div class="inputWrapper">
+      <div class="inputLabel">HTTP Method</div>
+      <select name="httpmethod">
+        <option value="post">POST</option>
+        <option value="get">GET</option>
+        <option value="put">PUT</option>
+        <option value="delete">DELETE</option>
+      </select>
+    </div>
+
+    <div class="inputWrapper">
+      <div class="inputLabel">Timeout</div>
+      <select name="intval" name="timeoutSeconds">
+        <option value="1">1 sec</option>
+        <option value="2">2 sec</option>
+        <option value="3">3 sec</option>
+        <option value="4">4 sec</option>
+        <option value="5">5 sec</option>
+      </select>
+    </div>
+
+    <div class="inputWrapper ctaWrapper">
+      <button type="submit" class="cta green">Create Check</button>
+    </div>
+
+  </form>
+</div>
