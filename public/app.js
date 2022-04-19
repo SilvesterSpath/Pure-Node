@@ -166,6 +166,7 @@ app.bindForms = () => {
         const payload = {};
         const elements = i.elements;
         for (let i = 0; i < elements.length; i++) {
+          console.log(elements[i]);
           if (elements[i].type !== 'submit') {
             // Determine class of element and set value accordingly
             const classOfElement =
@@ -174,19 +175,24 @@ app.bindForms = () => {
                 ? elements[i].classList.value
                 : '';
             const valueOfElement =
-              elements[i].type == 'checkbox'
+              elements[i].type == 'checkbox' &&
+              classOfElement.indexOf('multiselect') == -1
                 ? elements[i].checked
-                : elements[i].value;
+                : classOfElement.indexOf('intval') == -1
+                ? elements[i].value
+                : parseInt(elements[i].value);
             const elementIsChecked = elements[i].checked;
             // Override the method of the form if the input's name is '_method'
             let nameOfElement = elements[i].name;
+            console.log('nameOfElement', nameOfElement);
+            if (nameOfElement == 'httpmethod') {
+              payload.method = valueOfElement;
+            }
             if (nameOfElement == '_method') {
               method = valueOfElement;
             } else {
               // Create a payload field named "method" if the elements name is actually httpmethod
-              if (nameOfElement == 'httpmethod') {
-                nameOfElement = 'method';
-              }
+
               // If the element has the class 'multiselect' add its value(s) as array elements
               if (classOfElement.indexOf('multiselect') > -1) {
                 if (elementIsChecked) {
@@ -201,6 +207,7 @@ app.bindForms = () => {
                 payload[elements[i].name] = valueOfElement;
               }
             }
+            console.log('payload', payload);
           }
         }
 
