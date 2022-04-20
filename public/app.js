@@ -418,6 +418,11 @@ app.loadDataOnPage = () => {
   if (primaryClass == 'accountEdit') {
     app.loadAccountEditPage();
   }
+
+  // Logic for dashboard page
+  if (primaryClass == 'checksList') {
+    app.loadChecksListPage();
+  }
 };
 
 // Load the account edit page specifically
@@ -473,7 +478,7 @@ app.loadChecksListPage = () => {
   // Get the phone number from  the current token, or log the user out if none is there
   const phone =
     typeof app.config.sessionToken.phone == 'string'
-      ? app.sessionToken.phone
+      ? app.config.sessionToken.phone
       : false;
   if (phone) {
     // Fetch the user data
@@ -535,10 +540,26 @@ app.loadChecksListPage = () => {
                 }
               );
             });
+            if (allChecks.length < 5) {
+              // Show the createCheck CTA
+              document.getElementById('createCheckCTA').style.display = 'block';
+            }
+          } else {
+            // Show 'you have no check' message
+            document.getElementById('noCheckMessage').style.display =
+              'table-row';
+
+            // Show the createCheck CTA
+            document.getElementById('createCheckCTA').style.display = 'block';
           }
+        } else {
+          // If the request comes back as something other than 200, log the user out (on the assumption that the api is temporarily down or the users token is bad)
+          app.logUserOut();
         }
       }
     );
+  } else {
+    app.logUserOut();
   }
 };
 
