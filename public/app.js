@@ -468,6 +468,80 @@ app.loadAccountEditPage = () => {
   }
 };
 
+// Load the dashboard page specifically
+app.loadChecksListPage = () => {
+  // Get the phone number from  the current token, or log the user out if none is there
+  const phone =
+    typeof app.config.sessionToken.phone == 'string'
+      ? app.sessionToken.phone
+      : false;
+  if (phone) {
+    // Fetch the user data
+    const queryStringObject = {
+      phone: phone,
+    };
+    app.client.request(
+      undefined,
+      'api/users',
+      'GET',
+      queryStringObject,
+      undefined,
+      (statusCode, responsePayload) => {
+        if (statusCode == 200) {
+          // Determine how many checks the user has
+          const allChecks =
+            typeof responsePayload.checks == 'object' &&
+            responsePayload.checks instanceof Array &&
+            responsePayload.checks.length > 0
+              ? responsePayload.checks
+              : [];
+          if (allChecks.length > 0) {
+            // Show each created check as a new row in the table
+            allChecks.forEach((checkId) => {
+              // Get the data for the check
+              const newQueryStringObject = {
+                id: checkId,
+              };
+              app.client.request(
+                undefined,
+                'api/checks',
+                'GET',
+                newQueryStringObject,
+                undefined,
+                (statusCode, responsePayload) => {
+                  if (statusCode == 200) {
+                    const checkData = responsePayload;
+                    // Make the check data into a table row
+                    const table = document.getElementById('checksListTable');
+                    const tr = table.insertRow(-1);
+                    tr.classList.add('checkRow');
+                    const td0 = tr.insertCell(0);
+                    const td1 = tr.insertCell(1);
+                    const td2 = tr.insertCell(2);
+                    const td3 = tr.insertCell(3);
+                    const td4 = tr.insertCell(4);
+                    td0.innerHTML = responsePayload.method.toUpperCase();
+                    td1.innerHTML = responsePayload.protocol + '://';
+                    td2.innerHTML = responsePayload.url;
+                    const state =
+                      typeof responsePayload.state == 'string'
+                        ? responsePayload.state
+                        : 'unknown';
+                    td3.innerHTML = state;
+                    td4.innerHTML = `<a href="/checks/edit?id=${responsePayload.id}">View / Edit / Delete</a>`;
+                  } else {
+                    console.log('Error trying to load check ID: ', checkId);
+                  }
+                }
+              );
+            });
+          }
+        }
+      }
+    );
+  }
+};
+
 // Loop to renew token often
 app.tokenRenewalLoop = () => {
   setInterval(() => {
