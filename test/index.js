@@ -2,52 +2,25 @@
  * Test runner
  */
 
-// Dependencies
-const helpers = require('../lib/helpers');
-const assert = require('assert');
-
 // Application logic for the test runner
 _app = {};
 
 // Container for the test
-_app.tests = {
-  unit: {},
-};
+_app.tests = {};
 
-// Assert that the getNumber function is returning a number
-_app.tests.unit['helpers.getNumber should return a number'] = (done) => {
-  const val = helpers.getNumber();
-
-  assert.equal(typeof val, 'number');
-  done();
-};
-
-// Assert that the getNumber function is returning 1
-_app.tests.unit['helpers.getNumber should return 1'] = (done) => {
-  const val = helpers.getNumber();
-
-  assert.equal(val, 1);
-  done();
-};
-
-// Assert that the getNumber function is returning 2
-_app.tests.unit['helpers.getNumber should return 2'] = (done) => {
-  const val = helpers.getNumber();
-
-  assert.equal(val, 2);
-  done();
-};
+// Add on the unit tests
+_app.tests.unit = require('./unit');
 
 // Count the tests
 _app.countTests = () => {
   let counter = 0;
   for (const i in _app.tests) {
-    for (const j in i) {
+    for (const j in _app.tests[i]) {
       counter++;
     }
   }
-  console.log(counter);
-  return counter - 1;
+
+  return counter;
 };
 
 // Run all the tests, collecting the errors and successes
@@ -63,10 +36,10 @@ _app.runTests = () => {
       (() => {
         const tempTestName = j;
         const testValue = subTests[j];
-        // Call the test
+        // Call the test (between the () are the done function)
         try {
           testValue(() => {
-            // If it calls back without thowing, then it succeded, so log it in green
+            // If it calls back without throwing, then it succeded, so log it in green
             console.log('\x1b[32m%s\x1b[0m', tempTestName);
             counter++;
             successes++;
@@ -111,7 +84,7 @@ _app.produceTestReport = (limit, successes, errors) => {
   }
 
   console.log('');
-  console.log('--------END TEST REPORT--------');
+  console.log('---------END TEST REPORT--------');
 };
 
 // Run the test
