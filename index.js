@@ -13,7 +13,7 @@ const cli = require('./lib/cli');
 const app = {};
 
 // Init function
-app.init = () => {
+app.init = (callback) => {
   // Start the server
   server.init();
 
@@ -23,11 +23,14 @@ app.init = () => {
   // Start the CLI, but make sure its starts last
   setTimeout(() => {
     cli.init();
+    callback();
   }, 50);
 };
 
-// Execute that function
-app.init();
+// Self incoking only if required directly (not when its being exported)
+if (require.main === module) {
+  app.init(() => {});
+}
 
 console.log('process.env.TEST:', process.env.TEST);
 
